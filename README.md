@@ -16,3 +16,13 @@ We have many parts to control.
 4. To control **1 and 2** above, I am using the [ELEGOO 8 channel DC 5V Relay Module](https://www.amazon.com/gp/product/B01HCFJC0Y/ref=ppx_yo_dt_b_asin_title_o05_s01?ie=UTF8&psc=1). I decided to follow Techplants [instructions](https://www.youtube.com/watch?v=Ur0w7VeLX08). Since this project has potential to add more solenoid valves, I decided to go with the 8 channel relay
    
    This relay requires outside power. So I am using a [5V 1A](https://www.amazon.com/gp/product/B07KVZHVCS/ref=ppx_yo_dt_b_asin_title_o05_s00?ie=UTF8&psc=1) power supply.
+
+Current pins in use
+
+**17: Light**
+
+**6: Fan Left side**
+
+**13: Fan Right side**
+
+**5: Solenoid Valve**
