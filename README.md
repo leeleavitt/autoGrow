@@ -26,3 +26,8 @@ Current pins in use
 **13: Fan Right side**
 
 **5: Solenoid Valve**
+
+
+I've added a cron job, where after typing `crontab -e` i added the following line of code to the document.
+
+```*/10 *    * * *   sudo python3 /home/pi/Documents/autoGrow/py/autoGrow.py > /dev/null 2>&1```

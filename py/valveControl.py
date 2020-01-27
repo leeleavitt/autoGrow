@@ -27,3 +27,14 @@ for i in range(len(pins)):
 GPIO.cleanup()
 
 
+##########
+#TESTING
+##########
+import json
+json = json.dumps(SETTINGS)
+f = open('SETTINGS.json', 'w')
+f.write(json)
+f.close()
+
+import json
+datum = json.load(open('SETTINGS.json'))
