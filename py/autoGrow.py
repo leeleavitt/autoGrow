@@ -25,21 +25,21 @@ def timeFinder():
 # Function to look at the time, and turn the light on or off
 def lightController():
     currentTime = timeFinder()
+    print('Time is ', currentTime)
     # If the current time is less than the specified time, or greater than the light off time
     # then turn off the light
-    if currentTime <= SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
+    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
     else:
         print('fuck you')
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.HIGH)
 
-lightController()
 # Function to run the two fans and alternate each direction
 # Basically I want to run the fans alternating each hour
-def fanController():
-    currentTime = timeFinder()
+# def fanController():
+#     currentTime = timeFinder()
 
-    if currentTime < SETTINGS['fanOn'] or currentTime > SETTINGS['fanOff']:
+#     if currentTime < SETTINGS['fanOn'] or currentTime > SETTINGS['fanOff']:
 
 
 
