@@ -58,6 +58,8 @@ def fanManager():
 
     # First Make sure this operates within operating hours
     if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
+        GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
+    else:
         # If the current time is not equal to settings current Time
         # Change the current time
         if currentTime != SETTINGS['currentTime']:
@@ -73,6 +75,9 @@ def fanManager():
             settingWriter(SETTINGS)
             #Now turn on the correct fan
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
+
+
+
 
     
 # Run the functions at each script call within the cron job
