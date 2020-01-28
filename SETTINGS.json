@@ -1,1 +1,1 @@
-{"lightPin": 17, "lightOn": 8, "hoursOn": 12, "lightOff": 20, "fanOnePin": 6, "fanTwoPin": 13, "fanOn": 8, "fanOff": 20}
+{"lightPin": 17, "lightOn": 8, "lightOff": 20, "fanPins": [6, 13], "fanOn": 8, "fanOff": 20, "currentFanIndex": 0, "currentTime": 42}

@@ -7,9 +7,9 @@ import datetime
 SETTINGS = {
     # Light Settings
     'lightPin' : 17,
-    'lightOn' : 8,
+    'lightOn' : 7,
     'hoursOn' : 12,
-    'lightOff' : 8 + 12,
+    'lightOff' : 18,
 
     # Fan One settings
     'fanOnePin' : 6,
@@ -31,19 +31,50 @@ def lightController():
     if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
     else:
-        print('fuck you')
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.HIGH)
 
-# Function to run the two fans and alternate each direction
-# Basically I want to run the fans alternating each hour
-# def fanController():
-#     currentTime = timeFinder()
+# This function writes to my settings file
+def settingWriter(SETTINGS):
+    print('writing')
+    print(SETTINGS)
+    import json
+    json = json.dumps(SETTINGS)
+    f = open('SETTINGS.json', 'w')
+    f.write(json)
+    f.close()
 
-#     if currentTime < SETTINGS['fanOn'] or currentTime > SETTINGS['fanOff']:
+# This function reads in the settings
+def settingReader():
+    import json
+    datum = json.load(open('SETTINGS.json'))
+    return datum
 
+# Function that runs the fan automatically every morning
+def fanManager():
+    # First check to see what time it is
+    currentTime = timeFinder()
+    # Read the setting file in
+    SETTINGS = settingReader()
 
+    # First Make sure this operates within operating hours
+    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
+        # If the current time is not equal to settings current Time
+        # Change the current time
+        if currentTime != SETTINGS['currentTime']:
+            # Change the setting to the time that it doesn't match
+            SETTINGS['currentTime'] = currentTime
+            print(SETTINGS['currentTime'])
+            # First Turn off the Other fan
+            GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.HIGH)
+            # Change the fan index
+            SETTINGS['currentFanIndex'] = int(not SETTINGS['currentFanIndex'])
+            print(SETTINGS['currentFanIndex'])
+            # save the setting
+            settingWriter(SETTINGS)
+            #Now turn on the correct fan
+            GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
 
-
+    
 # Run the functions at each script call within the cron job
 if __name__ == '__main__':
     try:
@@ -51,6 +82,7 @@ if __name__ == '__main__':
         GPIO.setmode(GPIO.BCM)
 
         lightController()
+        fanManager()
     except:
         GPIO.cleanup()
 
