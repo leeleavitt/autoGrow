@@ -17,6 +17,8 @@ We have many parts to control.
    
    This relay requires outside power. So I am using a [5V 1A](https://www.amazon.com/gp/product/B07KVZHVCS/ref=ppx_yo_dt_b_asin_title_o05_s00?ie=UTF8&psc=1) power supply.
 
+5. Finished making the reflective material for the grow house using this [vivosun reflective mylar](https://www.amazon.com/gp/product/B018VI75CS/ref=ppx_yo_dt_b_asin_title_o05_s02?ie=UTF8&th=1). This prevents most of the light from escaping the room. Made frames from wood and butt joints
+
 Current pins in use
 
 **17: Light**
