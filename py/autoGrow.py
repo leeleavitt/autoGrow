@@ -4,27 +4,59 @@ import RPi.GPIO as GPIO
 import time
 import datetime
 
-SETTINGS = {
-    # Light Settings
-    'lightPin' : 17,
-    'lightOn' : 7,
-    'hoursOn' : 12,
-    'lightOff' : 18,
+# SETTINGS = {
+#     # Light Settings
+#     'lightPin' : 17,
+#     'lightOn' : 7,
+#     'hoursOn' : 12,
+#     'lightOff' : 23,
 
-    # Fan One settings
-    'fanOnePin' : 6,
-    'fanTwoPin': 13,
-    'fanOn' : 8,
-    'fanOff' : 8 + 12,
-}
+#     # Fan One settings
+#     'fanOnePin' : 6,
+#     'fanTwoPin': 13,
+#     'fanOn' : 8,
+#     'fanOff' : 8 + 12,
+# }
 
 # Function to Return the hour of day.
 def timeFinder():
     return datetime.datetime.now().hour
 
+# This function writes to my settings file
+def settingWriter(SETTINGS):
+    print('writing')
+    print(SETTINGS)
+    import json
+    import os
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    json = json.dumps(SETTINGS)
+    f = open('/home/pi/Documents/autoGrow/py/SETTINGS.json', 'w')
+    f.write(json)
+    f.close()
+
+# This function reads in the settings
+def settingReader():
+    import json
+    import os
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    datum = json.load(open('/home/pi/Documents/autoGrow/py/SETTINGS.json'))
+    return datum
+
+# # Function to Log Each time the Fans were switched
+# def fileWriter():
+
+
 # Function to look at the time, and turn the light on or off
 def lightController():
+    import os
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    print(os.path.join(dir_path,'SETTINGS.json'))
+
+    # First check to see what time it is
     currentTime = timeFinder()
+    # Read the setting file in
+    SETTINGS = settingReader()
+
     print('Time is ', currentTime)
     # If the current time is less than the specified time, or greater than the light off time
     # then turn off the light
@@ -32,22 +64,6 @@ def lightController():
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
     else:
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.HIGH)
-
-# This function writes to my settings file
-def settingWriter(SETTINGS):
-    print('writing')
-    print(SETTINGS)
-    import json
-    json = json.dumps(SETTINGS)
-    f = open('SETTINGS.json', 'w')
-    f.write(json)
-    f.close()
-
-# This function reads in the settings
-def settingReader():
-    import json
-    datum = json.load(open('SETTINGS.json'))
-    return datum
 
 # Function that runs the fan automatically every morning
 def fanManager():
@@ -76,18 +92,13 @@ def fanManager():
             #Now turn on the correct fan
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
 
-
-
-
     
 # Run the functions at each script call within the cron job
 if __name__ == '__main__':
-    try:
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    #GPIO.cleanup()
+    lightController()
+    fanManager()
 
-        lightController()
-        fanManager()
-    except:
-        GPIO.cleanup()
 
