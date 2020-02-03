@@ -3,6 +3,8 @@
 import RPi.GPIO as GPIO
 import time
 import datetime
+from picamera import PiCamera, Color
+import os
 
 # SETTINGS = {
 #     # Light Settings
@@ -60,7 +62,7 @@ def lightController():
     print('Time is ', currentTime)
     # If the current time is less than the specified time, or greater than the light off time
     # then turn off the light
-    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
+    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff'] or SETTINGS['lightOffOverride']:
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
     else:
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.HIGH)
@@ -72,8 +74,16 @@ def fanManager():
     # Read the setting file in
     SETTINGS = settingReader()
 
-    # First Make sure this operates within operating hours
-    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
+    # LOGIC SERIES
+    # Are they operating within time ranges
+    # Have we Over ridden the fan?
+    # WHat are the current fan settings
+
+    # for i in range(len(SETTINGS['fanPins'])):
+    #     print(GPIO.input(SETTINGS['fanPins'][i]))
+
+    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff'] or SETTINGS['fanOffOverride']:
+        print('hi')
         GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
     else:
         # If the current time is not equal to settings current Time
@@ -92,7 +102,30 @@ def fanManager():
             #Now turn on the correct fan
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
 
-    
+def imageTaker():
+    SETTINGS = settingReader()
+    currentTime = timeFinder()
+    if currentTime >= SETTINGS['lightOn']  or currentTime < SETTINGS['lightOff']:
+        camera = PiCamera()
+
+        dir = os.path.dirname(__file__)
+
+        camera.resolution = (2592,1944)
+        camera.framerate = 15
+        dateAndTime = datetime.datetime.now()
+        dateAndTime = dateAndTime.strftime("%m-%d-%Y_%H.%M")
+
+        imageName = '/home/pi/Documents/autoGrow/growPics/'+dateAndTime+'image.png'
+        camera.start_preview()
+        camera.awb_mode = 'tungsten'
+        camera.annotate_foreground = Color('black')
+        camera.annotate_text_size = 60
+        camera.annotate_text = dateAndTime
+        time.sleep(5)
+        camera.capture(imageName)
+        camera.stop_preview()
+
+
 # Run the functions at each script call within the cron job
 if __name__ == '__main__':
     GPIO.setwarnings(False)
@@ -100,5 +133,6 @@ if __name__ == '__main__':
     #GPIO.cleanup()
     lightController()
     fanManager()
+    imageTaker()
 
 
