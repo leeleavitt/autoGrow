@@ -105,24 +105,29 @@ def fanManager():
 def imageTaker():
     SETTINGS = settingReader()
     currentTime = timeFinder()
-    if currentTime >= SETTINGS['lightOn']  or currentTime < SETTINGS['lightOff']:
+    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
+        print('hello')
+    else:
         camera = PiCamera()
 
         dir = os.path.dirname(__file__)
 
-        camera.resolution = (2592,1944)
+        camera.resolution = (1296,972)
         camera.framerate = 15
         dateAndTime = datetime.datetime.now()
-        dateAndTime = dateAndTime.strftime("%m-%d-%Y_%H.%M")
+        fileDateAndTime = dateAndTime.strftime("%Y%m%d_%H%M")
+        imageDateAndTime = dateAndTime.strftime("%m-%d-%Y_%H:%M")
 
-        imageName = '/home/pi/Documents/autoGrow/growPics/'+dateAndTime+'image.png'
+        imageName = '/home/pi/Documents/autoGrow/growPics/'+fileDateAndTime+'image.png'
         camera.start_preview()
         camera.awb_mode = 'tungsten'
         camera.annotate_foreground = Color('black')
-        camera.annotate_text_size = 60
-        camera.annotate_text = dateAndTime
+        camera.annotate_text_size = 30
+        camera.annotate_text = imageDateAndTime
+        camera.rotation = 180
         time.sleep(5)
         camera.capture(imageName)
+
         camera.stop_preview()
 
 
