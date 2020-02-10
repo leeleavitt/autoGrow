@@ -103,33 +103,38 @@ def fanManager():
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
 
 def imageTaker():
+    '''
+    This shows the resolution settings to use
+    https://picamera.readthedocs.io/en/release-1.12/fov.html
+    '''
     SETTINGS = settingReader()
     currentTime = timeFinder()
     if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
         print('hello')
     else:
-        #Turn on the LED for better Image
-        #GPIO.setup(26, GPIO.OUT, initial = GPIO.LOW)
+        #Turn on the LED and turn off the grow light for better Image, 
+        GPIO.setup((26,17), GPIO.OUT, initial = GPIO.LOW)
+
+        #Start making names for the image and the file name
         dateAndTime = datetime.datetime.now()
         fileDateAndTime = dateAndTime.strftime("%Y%m%d_%H%M")
         imageDateAndTime = dateAndTime.strftime("%m-%d-%Y_%H:%M")
-
         imageName = '/home/pi/Documents/autoGrow/growPics/'+fileDateAndTime+'image.png'
-        
-        camera = PiCamera()
-        camera.resolution = (1296,972)
-        camera.framerate = 15
-        camera.start_preview()
-        camera.awb_mode = 'auto'
-        camera.annotate_foreground = Color('black')
-        camera.annotate_text_size = 30
-        camera.annotate_text = imageDateAndTime
-        camera.rotation = 180
-        time.sleep(5)
-        camera.capture(imageName)
-        camera.stop_preview()
 
-        #GPIO.setup(26, GPIO.OUT, initial = GPIO.HIGH)
+        with PiCamera() as camera:
+            camera.resolution = (1640,1232)
+            camera.framerate = 15
+            camera.awb_mode = 'auto'
+            camera.annotate_foreground = Color('black')
+            camera.annotate_text_size = 30
+            camera.annotate_text = imageDateAndTime
+            camera.rotation = 180
+            camera.start_preview()
+            time.sleep(2)
+            camera.capture(imageName)
+            camera.stop_preview()
+        # Now Turn off the LED and turn back on the grow light
+        GPIO.setup((26,17), GPIO.OUT, initial = GPIO.HIGH)
 
 
 
@@ -137,7 +142,6 @@ def imageTaker():
 if __name__ == '__main__':
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    #GPIO.cleanup()
     lightController()
     fanManager()
     imageTaker()

@@ -33,7 +33,7 @@ def imageTaker():
         time.sleep(5)
         camera.capture(imageName)
         camera.stop_preview()
-        time.sleep(5)
+        #time.sleep(5)
 
     GPIO.setup(26, GPIO.OUT, initial = GPIO.HIGH)
 

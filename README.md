@@ -19,6 +19,8 @@ We have many parts to control.
 
 5. Finished making the reflective material for the grow house using this [vivosun reflective mylar](https://www.amazon.com/gp/product/B018VI75CS/ref=ppx_yo_dt_b_asin_title_o05_s02?ie=UTF8&th=1). This prevents most of the light from escaping the room. Made frames from wood and butt joints
 
+6. Added a [Craftsman LED](https://www.lowes.com/pd/CRAFTSMAN-2000-Lumen-LED-Portable-Work-Light/1000598689) yellow light. I turn this light on and the grow light off to take an image for the timelapse imaging.
+
 Current pins in use
 
 **17: Light**
@@ -29,7 +31,9 @@ Current pins in use
 
 **5: Solenoid Valve**
 
+**26: Craftsman LED Yellow Light**
+
 
 I've added a cron job, where after typing `crontab -e` i added the following line of code to the document.
 
-```*/10 *    * * *   sudo python3 /home/pi/Documents/autoGrow/py/autoGrow.py > /dev/null 2>&1```
+```*/30 *    * * *   sudo python3 /home/pi/Documents/autoGrow/py/autoGrow.py > /dev/null 2>&1```
