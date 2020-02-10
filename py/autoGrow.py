@@ -108,27 +108,29 @@ def imageTaker():
     if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
         print('hello')
     else:
-        camera = PiCamera()
-
-        dir = os.path.dirname(__file__)
-
-        camera.resolution = (1296,972)
-        camera.framerate = 15
+        #Turn on the LED for better Image
+        #GPIO.setup(26, GPIO.OUT, initial = GPIO.LOW)
         dateAndTime = datetime.datetime.now()
         fileDateAndTime = dateAndTime.strftime("%Y%m%d_%H%M")
         imageDateAndTime = dateAndTime.strftime("%m-%d-%Y_%H:%M")
 
         imageName = '/home/pi/Documents/autoGrow/growPics/'+fileDateAndTime+'image.png'
+        
+        camera = PiCamera()
+        camera.resolution = (1296,972)
+        camera.framerate = 15
         camera.start_preview()
-        camera.awb_mode = 'tungsten'
+        camera.awb_mode = 'auto'
         camera.annotate_foreground = Color('black')
         camera.annotate_text_size = 30
         camera.annotate_text = imageDateAndTime
         camera.rotation = 180
         time.sleep(5)
         camera.capture(imageName)
-
         camera.stop_preview()
+
+        #GPIO.setup(26, GPIO.OUT, initial = GPIO.HIGH)
+
 
 
 # Run the functions at each script call within the cron job
@@ -139,5 +141,7 @@ if __name__ == '__main__':
     lightController()
     fanManager()
     imageTaker()
+
+
 
 

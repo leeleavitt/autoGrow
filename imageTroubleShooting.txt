@@ -1,0 +1,54 @@
+# Here i describe how to make a video from these images
+
+# This is how i describe to make the video from png files.
+# you must already be in the directory
+
+cd growPics/
+
+# AVI
+ffmpeg -pattern_type glob -i '*.png' -framerate 25 -s 1296x972 -c:v libx264 -crf 10 out.avi
+
+# MP4
+ffmpeg -pattern_type glob -i '*.png' -s 1296x972 -c:v libx264 -vf fps=10 -pix_fmt yuv420p out.mp4
+
+# Now transfer this to my computer using
+# follow this to get ssh running https://jeetblogs.org/post/sshing-into-a-windows-wsl-linux-subsystem/
+
+# from pi to labtop, on pi
+scp -P 2222 /home/pi/Documents/autoGrow/growPics/out.avi leeleavitt@172.17.80.100/mnt/c/Users/leele/Desktop
+
+# From pi to laptop
+scp pi@192.168.1.184:/home/pi/Documents/autoGrow/growPics/out.avi /mnt/c/Users/leele/Desktop/
+
+#after a half day i am taking up half a gb of size. This is not sustainable. thus i need to
+# reisize thes to be half the resolution 133M
+
+# This is how it did it for me using imagemagick
+for f in `find . -name "*.png"`
+do 
+    convert $f -resize 50% $f
+done
+
+# Ubuntu finding image info
+identify image.png
+
+#Ubuntu find folder size
+du -hs /path/to/directory
+
+
+
+##########################################################
+#I need to Rotate all images in the timeLapse 2 directory
+
+cd growPics/timeLapse2
+
+for f in `find . -name "*.png"`
+do 
+    convert $f -rotate 180 $f
+done
+
+
+
+
+
+
