@@ -110,7 +110,10 @@ def fanManager2():
     for i in range(len(fanTime)):
         fanLogic.append(fanTime[i][0] <= currentTime <= fanTime[i][1])
     
-    if any(fanLogic):
+    print(fanLogic)
+
+    if not any(fanLogic):
+        print('fans off')
         GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
     else:
         # If the current time is not equal to settings current Time
