@@ -23,6 +23,13 @@ We have many parts to control.
 
 Current pins in use
 
+Added a new feature to control the fans at specified intervals. Within the `SETTINGS.json` file i have added `fanTime`, this is a list of lists. For example to have the fan turn for specified times during the day add a new list item to it 
+```
+"fanTime":[[10,12],[20,22]]
+```
+This means the fan will run between 10am and noon, and then from 8p to 10p
+
+
 **17: Light**
 
 **6: Fan Left side**

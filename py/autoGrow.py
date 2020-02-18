@@ -6,20 +6,6 @@ import datetime
 from picamera import PiCamera, Color
 import os
 
-# SETTINGS = {
-#     # Light Settings
-#     'lightPin' : 17,
-#     'lightOn' : 7,
-#     'hoursOn' : 12,
-#     'lightOff' : 23,
-
-#     # Fan One settings
-#     'fanOnePin' : 6,
-#     'fanTwoPin': 13,
-#     'fanOn' : 8,
-#     'fanOff' : 8 + 12,
-# }
-
 # Function to Return the hour of day.
 def timeFinder():
     return datetime.datetime.now().hour
@@ -40,7 +26,7 @@ def settingWriter(SETTINGS):
 def settingReader():
     import json
     import os
-    dir_path = os.path.dirname(os.path.abspath(__file__))
+    #dir_path = os.path.dirname(os.path.abspath(__file__))
     datum = json.load(open('/home/pi/Documents/autoGrow/py/SETTINGS.json'))
     return datum
 
@@ -101,6 +87,47 @@ def fanManager():
             settingWriter(SETTINGS)
             #Now turn on the correct fan
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
+# Function that runs the fan automatically every morning
+def fanManager2():
+    # First check to see what time it is
+    currentTime = timeFinder()
+    # Read the setting file in
+    SETTINGS = settingReader()
+
+    # LOGIC SERIES
+    # Are they operating within time ranges
+    # Have we Over ridden the fan?
+    # WHat are the current fan settings
+
+    # for i in range(len(SETTINGS['fanPins'])):
+    #     print(GPIO.input(SETTINGS['fanPins'][i]))
+    
+    # This is added functionality to add automating the fans
+    # Load in the settings
+    fanTime = SETTINGS['fanTime']
+    fanLogic = [] #intitialize an empty list
+    #Loop through each time setting and find if the condition holds
+    for i in range(len(fanTime)):
+        fanLogic.append(fanTime[i][0] <= currentTime <= fanTime[i][1])
+    
+    if any(fanLogic):
+        GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
+    else:
+        # If the current time is not equal to settings current Time
+        # Change the current time
+        if currentTime != SETTINGS['currentTime']:
+            # Change the setting to the time that it doesn't match
+            SETTINGS['currentTime'] = currentTime
+            print(SETTINGS['currentTime'])
+            # First Turn off the Other fan
+            GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.HIGH)
+            # Change the fan index
+            SETTINGS['currentFanIndex'] = int(not SETTINGS['currentFanIndex'])
+            print(SETTINGS['currentFanIndex'])
+            # save the setting
+            settingWriter(SETTINGS)
+            #Now turn on the correct fan
+            GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
 
 def imageTaker():
     '''
@@ -143,7 +170,7 @@ if __name__ == '__main__':
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     lightController()
-    fanManager()
+    fanManager2()
     imageTaker()
 
 
