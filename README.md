@@ -21,6 +21,8 @@ We have many parts to control.
 
 6. Added a [Craftsman LED](https://www.lowes.com/pd/CRAFTSMAN-2000-Lumen-LED-Portable-Work-Light/1000598689) yellow light. I turn this light on and the grow light off to take an image for the timelapse imaging.
 
+7. Added an [AM2302 sensor](https://www.adafruit.com/product/393). This allows me to keep track of temperture and humidity. Do note a significant ammount of install was required by running this in the console`sudo pip3 install Adafruit_DHT`.
+
 Current pins in use
 
 Added a new feature to control the fans at specified intervals. Within the `SETTINGS.json` file i have added `fanTime`, this is a list of lists. For example to have the fan turn for specified times during the day add a new list item to it 
@@ -40,6 +42,7 @@ This means the fan will run between 10am and noon, and then from 8p to 10p
 
 **26: Craftsman LED Yellow Light**
 
+**18: AM2302 Temperature and Humidity sensor**
 
 I've added a cron job, where after typing `crontab -e` i added the following line of code to the document.
 
