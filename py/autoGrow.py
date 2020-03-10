@@ -108,7 +108,7 @@ def fanManager2():
     fanLogic = [] #intitialize an empty list
     #Loop through each time setting and find if the condition holds
     for i in range(len(fanTime)):
-        fanLogic.append(fanTime[i][0] <= currentTime <= fanTime[i][1])
+        fanLogic.append(fanTime[i][0] <= currentTime < fanTime[i][1])
     
     print(fanLogic)
 
@@ -166,15 +166,49 @@ def imageTaker():
         # Now Turn off the LED and turn back on the grow light
         GPIO.setup((26,17), GPIO.OUT, initial = GPIO.HIGH)
 
+def prettyLighter(input = 'on'):
+    if(input == 'on'):
+        GPIO.setup((26,17), GPIO.OUT, initial = GPIO.LOW)
+    elif(input == 'off'):
+        GPIO.setup((26,17), GPIO.OUT, initial = GPIO.HIGH)
+
+def dataMaker():
+    import sys
+    import Adafruit_DHT
+    import csv
+    import datetime
+
+    # import the settings
+    SETTINGS = settingReader()
+    # Read the Sensor
+    humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302,SETTINGS['sensorPins'][0])
+    #convert temp to farenheit
+    temp = round(temp * (9/5) + 32,2)
+    humidity = round(humidity,2)
+
+    # Get the date and time
+    current = datetime.datetime.now()
+    date = current.strftime("%Y%m%d")
+    time = current.strftime("%H%M")
+
+    with open('/home/pi/Documents/autoGrow/data/tempHumidData.csv', "a+") as f:
+        fileWriter = csv.writer(f, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
+        fileWriter.writerow([date, time, temp, humidity])
+
+
+
 
 
 # Run the functions at each script call within the cron job
 if __name__ == '__main__':
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
+    
     lightController()
     fanManager2()
-    imageTaker()
+    #prettyLighter('off')
+    #imageTaker()
+    dataMaker()
 
 
 

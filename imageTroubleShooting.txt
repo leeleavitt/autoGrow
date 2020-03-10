@@ -5,11 +5,14 @@
 
 cd growPics/
 
+# Show me how many images there are
+ls -1 | wc -l
+
 # AVI
-ffmpeg -pattern_type glob -i '*.png' -framerate 1 -c:v libx264 -crf 10 out.avi
+ffmpeg -r 100 -pattern_type glob -i '*.png' -c:v libx264 -crf 25 out.avi
 
 # MP4
-ffmpeg -pattern_type glob -i '*.png' -s 1296x972 -c:v libx264 -vf fps=10 -pix_fmt yuv420p out.mp4
+ffmpeg -pattern_type glob -i '*.png' -s 1296x972 -c:v libx264 -vf fps=200 -pix_fmt yuv420p out.mp4
 
 # Now transfer this to my computer using
 # follow this to get ssh running https://jeetblogs.org/post/sshing-into-a-windows-wsl-linux-subsystem/
