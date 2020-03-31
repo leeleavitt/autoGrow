@@ -48,10 +48,10 @@ def lightController():
     print('Time is ', currentTime)
     # If the current time is less than the specified time, or greater than the light off time
     # then turn off the light
-    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff'] or SETTINGS['lightOffOverride']:
-        GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
-    else:
+    if SETTINGS['lightOn'] <= currentTime < SETTINGS['lightOff'] or SETTINGS['lightOnOverride']:
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.HIGH)
+    else:
+        GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
 
 # Function that runs the fan automatically every morning
 def fanManager():
@@ -87,6 +87,7 @@ def fanManager():
             settingWriter(SETTINGS)
             #Now turn on the correct fan
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
+
 # Function that runs the fan automatically every morning
 def fanManager2():
     # First check to see what time it is
@@ -139,9 +140,18 @@ def imageTaker():
     '''
     SETTINGS = settingReader()
     currentTime = timeFinder()
-    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff']:
-        print('hello')
-    else:
+
+    # What is the current time
+    current = datetime.datetime.now()
+    # This defines when the images should be captured
+    timeLogs = [0,15,30,45]
+    # This observes whether an image should be taken
+    pictureLogic = any([current.minute == i for i in timeLogs])
+    # This sees if we are still within lighting times.
+    lightLogic = SETTINGS['lightOn'] <= currentTime < SETTINGS['lightOff']
+
+    # If both are matched then take a picture!
+    if lightLogic and pictureLogic:
         #Turn on the LED and turn off the grow light for better Image, 
         GPIO.setup((26,17), GPIO.OUT, initial = GPIO.LOW)
 
@@ -178,36 +188,43 @@ def dataMaker():
     import csv
     import datetime
 
-    # import the settings
-    SETTINGS = settingReader()
-    # Read the Sensor
-    humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302,SETTINGS['sensorPins'][0])
-    #convert temp to farenheit
-    temp = round(temp * (9/5) + 32,2)
-    humidity = round(humidity,2)
-
     # Get the date and time
     current = datetime.datetime.now()
     date = current.strftime("%Y%m%d")
     time = current.strftime("%H%M")
 
-    with open('/home/pi/Documents/autoGrow/data/tempHumidData.csv', "a+") as f:
-        fileWriter = csv.writer(f, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-        fileWriter.writerow([date, time, temp, humidity])
+    timeLogs = [0,15,30,45]
+    if(any([current.minute == i for i in timeLogs])):
+        # import the settings
+        SETTINGS = settingReader()
+        # Read the Sensor
+        humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, SETTINGS['sensorPins'][0])
+        #convert temp to farenheit
+        temp = round(temp * (9/5) + 32,2)
+        humidity = round(humidity,2)
+
+        # Get the date and time
+        current = datetime.datetime.now()
+        date = current.strftime("%Y%m%d")
+        time = current.strftime("%H%M")
+
+        with open('/home/pi/Documents/autoGrow/data/tempHumidData.csv', "a+") as f:
+            fileWriter = csv.writer(f, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL)
+            fileWriter.writerow([date, time, temp, humidity])
 
 
 
 
 
 # Run the functions at each script call within the cron job
-if __name__ == '__main__':
+if __name__ == "__main__":
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     
     lightController()
     fanManager2()
     #prettyLighter('off')
-    #imageTaker()
+    imageTaker()
     dataMaker()
 
 
