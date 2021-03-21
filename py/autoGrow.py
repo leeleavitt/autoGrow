@@ -33,7 +33,6 @@ def settingReader():
 # # Function to Log Each time the Fans were switched
 # def fileWriter():
 
-
 # Function to look at the time, and turn the light on or off
 def lightController():
     import os
@@ -89,6 +88,9 @@ def fanManager():
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
 
 # Function that runs the fan automatically every morning
+# This reads the fanTime from the SETTINGS
+# And turns the fan on at the specified times
+# This function also alternates fans each hour
 def fanManager2():
     # First check to see what time it is
     currentTime = timeFinder()
@@ -100,9 +102,7 @@ def fanManager2():
     # Have we Over ridden the fan?
     # WHat are the current fan settings
 
-    # for i in range(len(SETTINGS['fanPins'])):
-    #     print(GPIO.input(SETTINGS['fanPins'][i]))
-    
+
     # This is added functionality to add automating the fans
     # Load in the settings
     fanTime = SETTINGS['fanTime']
@@ -116,18 +116,17 @@ def fanManager2():
     if not any(fanLogic):
         print('fans off')
         GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
+        
     else:
         # If the current time is not equal to settings current Time
         # Change the current time
         if currentTime != SETTINGS['currentTime']:
             # Change the setting to the time that it doesn't match
             SETTINGS['currentTime'] = currentTime
-            print(SETTINGS['currentTime'])
             # First Turn off the Other fan
             GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.HIGH)
             # Change the fan index
             SETTINGS['currentFanIndex'] = int(not SETTINGS['currentFanIndex'])
-            print(SETTINGS['currentFanIndex'])
             # save the setting
             settingWriter(SETTINGS)
             #Now turn on the correct fan
@@ -224,8 +223,8 @@ if __name__ == "__main__":
     lightController()
     fanManager2()
     #prettyLighter('off')
-    imageTaker()
-    dataMaker()
+    #imageTaker()
+    #dataMaker()
 
 
 
