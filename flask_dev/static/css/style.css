@@ -1,0 +1,32 @@
+header {
+    background-color: #57e968;
+    height: 35px;
+    width: 100%;
+    opacity: .9;
+    margin-bottom: 10px;
+  }
+header h1.logo {
+    margin: 0;
+    font-size: 1.7em;
+    color: #fff;
+    text-transform: uppercase;
+    float: left;
+  }
+header h1.logo:hover {
+    color: rgb(245, 1, 1);
+    text-decoration: none;
+  }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #444;
+}
+
+.switch-off {
+  background-color:rgb(131, 129, 129)
+}
+
+.switch-on {
+  background-color:#bd47d5
+}
