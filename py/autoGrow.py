@@ -53,11 +53,13 @@ def lightController():
         GPIO.setup(SETTINGS['lightPin'], GPIO.OUT, initial = GPIO.LOW)
 
 # Function that runs the fan automatically every morning
+# pis are 6 and 13
 def fanManager():
     # First check to see what time it is
     currentTime = timeFinder()
     # Read the setting file in
     SETTINGS = settingReader()
+    print(SETTINGS)
 
     # LOGIC SERIES
     # Are they operating within time ranges
@@ -67,7 +69,7 @@ def fanManager():
     # for i in range(len(SETTINGS['fanPins'])):
     #     print(GPIO.input(SETTINGS['fanPins'][i]))
 
-    if currentTime < SETTINGS['lightOn']  or currentTime >= SETTINGS['lightOff'] or SETTINGS['fanOffOverride']:
+    if (currentTime < SETTINGS['lightOn']  | currentTime >= SETTINGS['lightOff']) | SETTINGS['fanOffOverride']:
         print('hi')
         GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
     else:
@@ -91,6 +93,7 @@ def fanManager():
 # This reads the fanTime from the SETTINGS
 # And turns the fan on at the specified times
 # This function also alternates fans each hour
+# pins 6 and 13
 def fanManager2():
     # First check to see what time it is
     currentTime = timeFinder()
@@ -99,38 +102,45 @@ def fanManager2():
 
     # LOGIC SERIES
     # Are they operating within time ranges
-    # Have we Over ridden the fan?
-    # WHat are the current fan settings
-
+    # Have we Overridden the fan?
+    # What are the current fan settings
 
     # This is added functionality to add automating the fans
     # Load in the settings
     fanTime = SETTINGS['fanTime']
-    fanLogic = [] #intitialize an empty list
-    #Loop through each time setting and find if the condition holds
+    fanLogic = []  # initialize an empty list
+    # Loop through each time setting and find if the condition holds
     for i in range(len(fanTime)):
         fanLogic.append(fanTime[i][0] <= currentTime < fanTime[i][1])
-    
+
     print(fanLogic)
 
-    if not any(fanLogic):
+    # Make sure fanPins is a list
+    if not isinstance(SETTINGS['fanPins'], list):
+        SETTINGS['fanPins'] = [SETTINGS['fanPins']]
+
+    # If the list of time values is false
+    if (not any(fanLogic)) or SETTINGS['fanOffOverride']:
         print('fans off')
         GPIO.setup(SETTINGS['fanPins'], GPIO.OUT, initial=GPIO.HIGH)
-        
     else:
         # If the current time is not equal to settings current Time
         # Change the current time
-        if currentTime != SETTINGS['currentTime']:
-            # Change the setting to the time that it doesn't match
-            SETTINGS['currentTime'] = currentTime
-            # First Turn off the Other fan
-            GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.HIGH)
+
+        # Change the setting to the time that it doesn't match
+        SETTINGS['currentTime'] = currentTime
+
+        # Check if it's time to alternate fans (every hour)
+        if len(SETTINGS['fanPins']) > 1 and (currentTime % 3600 == 0):
+            # First Turn off the current fan
+            GPIO.setup(SETTINGS['fanPins'][SETTINGS['currentFanIndex']], GPIO.OUT, initial=GPIO.HIGH)
             # Change the fan index
             SETTINGS['currentFanIndex'] = int(not SETTINGS['currentFanIndex'])
-            # save the setting
+            # Save the setting
             settingWriter(SETTINGS)
-            #Now turn on the correct fan
-            GPIO.setup(SETTINGS['fanPins'][ SETTINGS['currentFanIndex'] ], GPIO.OUT, initial=GPIO.LOW)
+
+        # Now turn on the correct fan
+        GPIO.setup(SETTINGS['fanPins'][SETTINGS['currentFanIndex']], GPIO.OUT, initial=GPIO.LOW)
 
 def imageTaker():
     '''
@@ -143,7 +153,7 @@ def imageTaker():
     # What is the current time
     current = datetime.datetime.now()
     # This defines when the images should be captured
-    timeLogs = [0,15,30,45]
+    timeLogs = [0]
     # This observes whether an image should be taken
     pictureLogic = any([current.minute == i for i in timeLogs])
     # This sees if we are still within lighting times.
@@ -192,7 +202,7 @@ def dataMaker():
     date = current.strftime("%Y%m%d")
     time = current.strftime("%H%M")
 
-    timeLogs = [0,15,30,45]
+    timeLogs = [0,19,30,45]
     if(any([current.minute == i for i in timeLogs])):
         # import the settings
         SETTINGS = settingReader()
@@ -222,8 +232,9 @@ if __name__ == "__main__":
     
     lightController()
     fanManager2()
-    #prettyLighter('off')
+    #prettyLighter('on')
     #imageTaker()
+    #prettyLighter('off')
     #dataMaker()
 
 

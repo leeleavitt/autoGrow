@@ -1,1 +1,1 @@
-{"lightPin": 17, "lightOn": 7, "lightOff": 23, "fanPins": [6, 13], "sensorPins": [18], "fanOffOverride": 0, "fanTime": [[9, 11], [9, 11]], "lightOnOverride": 0, "currentFanIndex": 0, "currentTime": 9}
+{"lightPin": 17, "lightOn": 8, "lightOff": 22, "fanPins": [13], "sensorPins": [18], "fanOffOverride": 0, "fanTime": [[9, 12], [16,18]], "lightOnOverride": 0, "currentFanIndex": 0, "currentTime": 11}
